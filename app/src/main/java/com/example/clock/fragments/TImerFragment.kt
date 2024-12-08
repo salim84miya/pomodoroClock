@@ -102,7 +102,7 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
         }
 
         timerJob = viewLifecycleOwner.lifecycleScope.launch {
-            while (elapsedSeconds < duration) {
+            while (elapsedSeconds < (duration*60)) {
                 elapsedSeconds++;
                 binding.timerClockTv.text = formatTime(elapsedSeconds)
                 delay(1000)
@@ -227,11 +227,11 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
         val focusTimePicker = dialogView.findViewById<NumberPicker>(R.id.focus_time)
         val breakTimePicker = dialogView.findViewById<NumberPicker>(R.id.break_time)
 
-        focusTimePicker.minValue = 0
-        focusTimePicker.maxValue =60
+        focusTimePicker.minValue = 1
+        focusTimePicker.maxValue =90
 
-        breakTimePicker.minValue = 0
-        breakTimePicker.maxValue = 60
+        breakTimePicker.minValue = 1
+        breakTimePicker.maxValue = 90
 
         val saveBtn = dialogView.findViewById<Button>(R.id.save_btn)
         val cancelBtn = dialogView.findViewById<Button>(R.id.cancel_btn)
@@ -243,6 +243,10 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
                 putInt("rest",breakTimePicker.value)
                 apply()
             }
+            binding.timerBorder.setImageResource(R.drawable.circle_border)
+            binding.resetBtn.setBackgroundColor(resources.getColor(R.color.orange))
+            binding.endBtn.visibility = View.GONE
+            resetTimer()
             dialog.dismiss()
         }
 
