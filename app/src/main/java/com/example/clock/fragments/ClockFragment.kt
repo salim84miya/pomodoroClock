@@ -7,6 +7,8 @@ import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -39,24 +41,38 @@ class ClockFragment: Fragment(R.layout.clock_fragment) {
         return binding.root
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         clockText = binding.fragClockTv
         coroutineScope = CoroutineScope(Dispatchers.Main)
         startTime()
+        clockText.setOnClickListener {
+            isFormat1= !isFormat1
+            updateTime()
+        }
 
 
 
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.main_menu,menu)
+    }
+
     override fun onResume() {
         super.onResume()
 
-        startTime()
-        clockText.setOnClickListener {
-            isFormat1= !isFormat1
+        if(!::coroutineScope.isInitialized|| !coroutineScope.isActive){
+            startTime()
         }
+
     }
 
 

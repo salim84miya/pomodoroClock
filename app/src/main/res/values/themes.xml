@@ -7,5 +7,13 @@
         <item name="android:windowFullscreen">true</item>
     </style>
 
+
+    
     <style name="Theme.Clock" parent="Base.Theme.Clock" />
+
+<!--    <style name="OverflowMenuStyle">-->
+<!--        <item name=""-->
+<!--        <item name="android:textColorPrimary">@color/white</item>-->
+<!--    </style>-->
+    
 </resources>

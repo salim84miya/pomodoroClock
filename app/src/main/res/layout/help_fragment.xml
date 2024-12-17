@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- LinearLayout inside ScrollView to hold all the TextViews -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Title Section -->
+        <TextView
+            android:id="@+id/help_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="How to Use the App: A Guide to Controls"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/white"/>
+
+        <!-- Section 1: Navigation -->
+        <TextView
+            android:id="@+id/nav_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1. Navigation"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FA7000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/nav_instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- Swipe to Switch Pages: Simply swipe left or right to change between the different pages in the app."
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"
+            android:textColor="@color/white"/>
+
+        <!-- Section 2: Pages -->
+        <TextView
+            android:id="@+id/pages_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2. Pages"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FA7000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/pages_instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- Default Page: Clock\n- Next Page: Timer"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Section 3: Clock -->
+        <TextView
+            android:id="@+id/clock_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="3. Clock"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FA7000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/clock_instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- Changing Time Format: Click on the time text to switch between different time formats:\n   Format 1: HH:mm (Hours and Minutes)\n   Format 2: HH:mm:ss (Hours, Minutes, and Seconds)"
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Section 4: Timer -->
+        <TextView
+            android:id="@+id/timer_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="4. Timer"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FA7000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/timer_instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- Start/Pause Timer: Click on the text '00:00' to start the timer. Click again to pause.\n- Reset Timer: Press the Reset button to reset the timer to '00:00'.\n- End Timer Session: Press the End button to end the current session.\n- Time Selection Dialog: Long click on the timer text to open the Time Selection Dialog and select Focus and Break time."
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Section 5: Buzzer -->
+        <TextView
+            android:id="@+id/buzzer_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="5. Buzzer"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FA7000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/buzzer_instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- Buzzer Sound: When Focus or Break time ends, the buzzer will sound for three seconds."
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Section 6: Managing Sessions -->
+        <TextView
+            android:id="@+id/sessions_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="6. Managing Sessions"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FA7000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/sessions_instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- What is a Session: A session consists of a combination of Focus Time and Break Time.\n- Session Management: When a session ends, you can click Restart to start the session again or Cancel to end the session."
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Section 7: Timer Colour Codes -->
+        <TextView
+            android:id="@+id/colour_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="7. Timer Colour Codes"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="#FA7000"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/colour_instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="- Focus Time: The timer text will be orange during Focus time.\n- Break Time: The timer text will be blue during Break time."
+            android:textSize="16sp"
+            android:textColor="@color/white"
+            android:layout_marginBottom="16dp"/>
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

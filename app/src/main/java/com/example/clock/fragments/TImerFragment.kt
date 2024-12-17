@@ -26,6 +26,8 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
     private var elapsedSeconds: Int = 0;
     private var isProductive:Boolean = true;
     private lateinit var mediaPlayer: MediaPlayer;
+    private var productiveTime:Int = 0;
+    private var breakTime:Int = 0;
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,6 +41,12 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+
+
+        //initial timer value setting
+        productiveTime = MyApp.sharedPref.getInt("focus",25)
+        binding.timerClockTv.text = formatTime(productiveTime*60)
 
         binding.timerClockTv.setOnLongClickListener {
             showSelectTime()
@@ -68,6 +76,7 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
         mediaPlayerStopping()
 
         binding.endBtn.visibility = View.GONE
+        binding.resetBtn.visibility = View.GONE
     }
 
     private fun startPomodoro(){
@@ -75,8 +84,8 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
         val sharedPref = MyApp.sharedPref
 
 
-        val productiveTime = sharedPref.getInt("focus", 26);
-        val breakTime = sharedPref.getInt("rest", 12);
+        productiveTime = sharedPref.getInt("focus", 26);
+        breakTime = sharedPref.getInt("rest", 12);
 
         Log.d("SharedPreferences", "minutes:$productiveTime seconds:$breakTime ")
 
@@ -89,9 +98,13 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
 
     private fun startTimer(duration: Int) {
 
+        //converting selection into minutes
+         val time = duration * 60;
+
         Log.d("Productive Timer", "productive start timer method call")
 
         binding.endBtn.visibility = View.VISIBLE
+        binding.resetBtn.visibility = View.VISIBLE
 
         if(isProductive){
             binding.timerBorder.setImageResource(R.drawable.circle_border)
@@ -102,9 +115,9 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
         }
 
         timerJob = viewLifecycleOwner.lifecycleScope.launch {
-            while (elapsedSeconds < (duration*60)) {
+            while (elapsedSeconds < (time)) {
                 elapsedSeconds++;
-                binding.timerClockTv.text = formatTime(elapsedSeconds)
+                binding.timerClockTv.text = formatTime((time-elapsedSeconds))
                 delay(1000)
             }
             buzzerSound()
@@ -134,7 +147,8 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
     private fun resetTimer() {
         stopTimer()
         elapsedSeconds = 0;
-        binding.timerClockTv.text = formatTime(elapsedSeconds)
+
+        binding.timerClockTv.text = if (isProductive) formatTime(productiveTime*60) else formatTime(breakTime*60);
     }
 
     override fun onDestroy() {
@@ -155,7 +169,7 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
     }
 
     private suspend fun buzzerSound(){
-       val job = viewLifecycleOwner.lifecycleScope.launch(Dispatchers.Main) {
+       val job = viewLifecycleOwner.lifecycleScope.launch {
 
            if(::mediaPlayer.isInitialized){
                mediaPlayer.prepare()
