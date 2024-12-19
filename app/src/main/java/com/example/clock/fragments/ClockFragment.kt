@@ -13,8 +13,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.clock.R
 import com.example.clock.databinding.ClockFragmentBinding
+import com.example.clock.viewmodel.ClockViewmodel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +33,7 @@ class ClockFragment: Fragment(R.layout.clock_fragment) {
     private lateinit var binding: ClockFragmentBinding
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var clockText: TextView
+    private lateinit var clockViewmodel: ClockViewmodel
     private var isFormat1 = true
 
     override fun onCreateView(
@@ -44,6 +48,12 @@ class ClockFragment: Fragment(R.layout.clock_fragment) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        clockViewmodel = ViewModelProvider(requireActivity())[ClockViewmodel::class.java]
+
+        clockViewmodel.isFormatPrimary.observe(this, Observer {
+            isFormat1 = it
+        })
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -53,7 +63,7 @@ class ClockFragment: Fragment(R.layout.clock_fragment) {
         coroutineScope = CoroutineScope(Dispatchers.Main)
         startTime()
         clockText.setOnClickListener {
-            isFormat1= !isFormat1
+            clockViewmodel.changeFormat()
             updateTime()
         }
 

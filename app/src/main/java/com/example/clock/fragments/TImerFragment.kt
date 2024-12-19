@@ -1,33 +1,26 @@
 package com.example.clock.fragments
 
-import android.app.AlertDialog
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.NumberPicker
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.clock.R
 import com.example.clock.databinding.TimerFragmentBinding
-import com.example.clock.utility.MyApp
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.example.clock.viewmodel.TimerViewmodel
+import com.example.clock.viewmodelfactory.TimerViewmodelFactory
 
-class TImerFragment : Fragment(R.layout.timer_fragment) {
+class TImerFragment : Fragment(R.layout.timer_fragment), TimeSelectionDialogFragment.TimeSelectedListener,RestartSessionDialogFragment.SessionSelectionListener {
 
     private lateinit var binding: TimerFragmentBinding
-    private var timerJob: Job? = null
-    private var elapsedSeconds: Int = 0;
+    private lateinit var timerViewmodel: TimerViewmodel
     private var isProductive:Boolean = true;
-    private lateinit var mediaPlayer: MediaPlayer;
     private var productiveTime:Int = 0;
     private var breakTime:Int = 0;
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,15 +31,50 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
         return binding.root
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        timerViewmodel = ViewModelProvider(requireActivity(),TimerViewmodelFactory(requireActivity().application))[TimerViewmodel::class.java]
 
+        timerViewmodel.isProductive.observe(viewLifecycleOwner, Observer {
+            isProductive = it
+        })
 
-        //initial timer value setting
-        productiveTime = MyApp.sharedPref.getInt("focus",25)
-        binding.timerClockTv.text = formatTime(productiveTime*60)
+        timerViewmodel.productiveTime.observe(viewLifecycleOwner, Observer {
+            productiveTime = it
+        })
+
+        timerViewmodel.breakTime.observe(viewLifecycleOwner, Observer {
+            breakTime = it
+        })
+
+        timerViewmodel.formatedTime.observe(viewLifecycleOwner, Observer {
+            binding.timerClockTv.text = it
+        })
+
+        timerViewmodel.buttonVisibility.observe(viewLifecycleOwner, Observer {
+            if(it.first){
+                binding.resetBtn.visibility = View.VISIBLE
+                binding.endBtn.visibility = View.VISIBLE
+            }else{
+                binding.resetBtn.visibility = View.GONE
+                binding.endBtn.visibility = View.GONE
+            }
+        })
+
+        timerViewmodel.borderColor.observe(viewLifecycleOwner, Observer {
+            binding.timerBorder.setImageResource(it)
+        })
+
+        timerViewmodel.resetButtonColor.observe(viewLifecycleOwner, Observer {
+            binding.resetBtn.setBackgroundColor(resources.getColor(it))
+        })
+
+        timerViewmodel.isShowRestartDialog.observe(viewLifecycleOwner, Observer {
+            if(it){
+                showRestartDialog()
+            }
+        })
 
         binding.timerClockTv.setOnLongClickListener {
             showSelectTime()
@@ -58,226 +86,67 @@ class TImerFragment : Fragment(R.layout.timer_fragment) {
         }
 
         binding.resetBtn.setOnClickListener {
-            resetTimer()
+            timerViewmodel.resetTimer()
         }
 
         binding.endBtn.setOnClickListener {
-            endSession()
+            timerViewmodel.endSession()
         }
 
-    }
+        timerViewmodel.isBuzzerPlaying.observe(viewLifecycleOwner, Observer {
+            binding.endBtn.isClickable = !it
+            binding.resetBtn.isClickable = !it
+        })
 
-    private fun endSession() {
-        resetTimer()
-        isProductive = true
-        binding.timerBorder.setImageResource(R.drawable.circle_border)
-        binding.resetBtn.setBackgroundColor(resources.getColor(R.color.orange))
-
-        mediaPlayerStopping()
-
-        binding.endBtn.visibility = View.GONE
-        binding.resetBtn.visibility = View.GONE
     }
 
     private fun startPomodoro(){
 
-        val sharedPref = MyApp.sharedPref
-
-
-        productiveTime = sharedPref.getInt("focus", 26);
-        breakTime = sharedPref.getInt("rest", 12);
-
         Log.d("SharedPreferences", "minutes:$productiveTime seconds:$breakTime ")
 
-        if (timerJob == null) {
-            startTimer(if (isProductive) productiveTime else breakTime)
+        if (timerViewmodel.timerJob.value == null) {
+            timerViewmodel.runningTimer(if(isProductive) productiveTime else breakTime)
         } else {
-            stopTimer()
+            timerViewmodel.stopTimer()
         }
     }
 
-    private fun startTimer(duration: Int) {
-
-        //converting selection into minutes
-         val time = duration * 60;
-
-        Log.d("Productive Timer", "productive start timer method call")
-
-        binding.endBtn.visibility = View.VISIBLE
-        binding.resetBtn.visibility = View.VISIBLE
-
-        if(isProductive){
-            binding.timerBorder.setImageResource(R.drawable.circle_border)
-            binding.resetBtn.setBackgroundColor(resources.getColor(R.color.orange))
-        }else{
-            binding.timerBorder.setImageResource(R.drawable.circle_border_blue)
-            binding.resetBtn.setBackgroundColor(resources.getColor(R.color.blue))
-        }
-
-        timerJob = viewLifecycleOwner.lifecycleScope.launch {
-            while (elapsedSeconds < (time)) {
-                elapsedSeconds++;
-                binding.timerClockTv.text = formatTime((time-elapsedSeconds))
-                delay(1000)
-            }
-            buzzerSound()
-            stopTimer()
-
-            if(isProductive){
-                isProductive = false
-                elapsedSeconds=0;
-                val breakDuration = MyApp.sharedPref.getInt("rest",6)
-                startTimer(breakDuration)
-            }else{
-                binding.endBtn.visibility = View.GONE
-                showRestartDialog()
-            }
 
 
-        }
-
-    }
-
-    private fun stopTimer() {
-        Log.d("Timer", "stop timer method call")
-        timerJob?.cancel()
-        timerJob = null
-    }
-
-    private fun resetTimer() {
-        stopTimer()
-        elapsedSeconds = 0;
-
-        binding.timerClockTv.text = if (isProductive) formatTime(productiveTime*60) else formatTime(breakTime*60);
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        stopTimer()
-
-        try {
-            mediaPlayer.release()
-        }catch (e:Exception){
-            Log.e("MediaPlayer","Error Releasing media player")
-        }
-    }
-
-    private fun formatTime(time: Int): String {
-        val minutes = time / 60;
-        val seconds = time % 60;
-        return String.format("%02d:%02d", minutes, seconds)
-    }
-
-    private suspend fun buzzerSound(){
-       val job = viewLifecycleOwner.lifecycleScope.launch {
-
-           if(::mediaPlayer.isInitialized){
-               mediaPlayer.prepare()
-               mediaPlayer.start()
-           }else{
-               mediaPlayer = MediaPlayer.create(requireContext(),R.raw.buzzing_sound)
-               mediaPlayer.start()
-           }
-
-            binding.resetBtn.isClickable =  false
-            binding.timerClockTv.isClickable = false
-            delay(3000)
-
-           mediaPlayerStopping()
-
-           binding.resetBtn.isClickable =  true
-           binding.timerClockTv.isClickable = true
-        }
-        job.join()
-
-
+    private fun showSelectTime(){
+        val dialogFragment = TimeSelectionDialogFragment()
+        dialogFragment.show(childFragmentManager,"TimePickerDialog")
     }
 
     private fun showRestartDialog(){
 
-        elapsedSeconds =0;
-        isProductive = true
+        timerViewmodel.resetElapsedSeconds()
+        timerViewmodel.toggleProductiveState(true)
 
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.timer_alert_dialog,null)
-
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .setCancelable(false)
-            .create()
-
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-
-        val restartBtn = dialogView.findViewById<Button>(R.id.restart_btn)
-        val closeBtn = dialogView.findViewById<Button>(R.id.close_btn)
-
-        restartBtn.setOnClickListener {
-            startTimer(MyApp.sharedPref.getInt("focus",16))
-            dialog.dismiss()
+        if(childFragmentManager.findFragmentByTag("RestartSessionDialog")==null){
+            val dialogFragment = RestartSessionDialogFragment()
+            dialogFragment.show(childFragmentManager,"RestartSessionDialog")
         }
-
-        closeBtn.setOnClickListener {
-            binding.timerBorder.setImageResource(R.drawable.circle_border)
-            binding.resetBtn.setBackgroundColor(resources.getColor(R.color.orange))
-            resetTimer()
-            dialog.dismiss()
-        }
-
-        dialog.show()
 
     }
 
-    private fun showSelectTime(){
-
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.time_select_dialog,null)
-
-        val dialog = AlertDialog.Builder(requireContext())
-            .setView(dialogView)
-            .setCancelable(true)
-            .create()
-
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        val focusTimePicker = dialogView.findViewById<NumberPicker>(R.id.focus_time)
-        val breakTimePicker = dialogView.findViewById<NumberPicker>(R.id.break_time)
-
-        focusTimePicker.minValue = 1
-        focusTimePicker.maxValue =90
-
-        breakTimePicker.minValue = 1
-        breakTimePicker.maxValue = 90
-
-        val saveBtn = dialogView.findViewById<Button>(R.id.save_btn)
-        val cancelBtn = dialogView.findViewById<Button>(R.id.cancel_btn)
-
-        saveBtn.setOnClickListener {
-
-            with(MyApp.sharedPref.edit()){
-                putInt("focus",focusTimePicker.value)
-                putInt("rest",breakTimePicker.value)
-                apply()
-            }
-            binding.timerBorder.setImageResource(R.drawable.circle_border)
-            binding.resetBtn.setBackgroundColor(resources.getColor(R.color.orange))
-            binding.endBtn.visibility = View.GONE
-            resetTimer()
-            dialog.dismiss()
-        }
-
-        cancelBtn.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        dialog.show()
+    override fun onTimeSelected() {
+            timerViewmodel.toggleBorder(R.drawable.circle_border)
+            timerViewmodel.toggleResetButtonColor(R.color.orange)
+             timerViewmodel.endSession()
     }
 
-
-    private fun mediaPlayerStopping(){
-
-        if(this::mediaPlayer.isInitialized && mediaPlayer.isPlaying){
-            mediaPlayer.stop()
-        }
+    override fun restartSelection() {
+        timerViewmodel.runningTimer(productiveTime)
     }
+
+    override fun cancelSelection() {
+        timerViewmodel.toggleBorder(R.drawable.circle_border)
+        timerViewmodel.toggleResetButtonColor(R.color.orange)
+        timerViewmodel.toggleButtonVisibility(false)
+        timerViewmodel.resetTimer()
+    }
+
 
 }
 
