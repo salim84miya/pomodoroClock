@@ -6,16 +6,32 @@
     android:layout_height="match_parent">
 
 
-
-    <ImageView
+    <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/timer_border"
-        android:layout_width="300dp"
-        android:layout_height="300dp"
-        android:src="@drawable/circle_border"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:indicatorSize="316dp"
+        app:indicatorColor="@color/orange"
+        app:trackColor="@color/white"
+        app:indicatorDirectionCircular="clockwise"
+        app:trackThickness="16dp"
+        android:indeterminate="false"
+        android:contentDescription="Timer progress"
         app:layout_constraintBottom_toBottomOf="@id/timer_clock_tv"
         app:layout_constraintEnd_toEndOf="@id/timer_clock_tv"
         app:layout_constraintStart_toStartOf="@id/timer_clock_tv"
         app:layout_constraintTop_toTopOf="@id/timer_clock_tv"/>
+
+
+<!--    <ImageView-->
+<!--        android:id="@+id/timer_border"-->
+<!--        android:layout_width="300dp"-->
+<!--        android:layout_height="300dp"-->
+<!--        android:src="@drawable/circle_border"-->
+<!--        app:layout_constraintBottom_toBottomOf="@id/timer_clock_tv"-->
+<!--        app:layout_constraintEnd_toEndOf="@id/timer_clock_tv"-->
+<!--        app:layout_constraintStart_toStartOf="@id/timer_clock_tv"-->
+<!--        app:layout_constraintTop_toTopOf="@id/timer_clock_tv"/>-->
 
 
     <TextView

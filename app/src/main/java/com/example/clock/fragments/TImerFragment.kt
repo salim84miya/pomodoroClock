@@ -62,8 +62,14 @@ class TImerFragment : Fragment(R.layout.timer_fragment), TimeSelectionDialogFrag
             }
         })
 
+
         timerViewmodel.borderColor.observe(viewLifecycleOwner, Observer {
-            binding.timerBorder.setImageResource(it)
+            binding.timerBorder.setIndicatorColor(resources.getColor(it))
+        })
+
+        timerViewmodel.progress.observe(viewLifecycleOwner, Observer {
+            Log.d("Timer", "Progress: ${it}")
+            binding.timerBorder.progress = it
         })
 
         timerViewmodel.resetButtonColor.observe(viewLifecycleOwner, Observer {
@@ -94,8 +100,12 @@ class TImerFragment : Fragment(R.layout.timer_fragment), TimeSelectionDialogFrag
         }
 
         timerViewmodel.isBuzzerPlaying.observe(viewLifecycleOwner, Observer {
-            binding.endBtn.isClickable = !it
-            binding.resetBtn.isClickable = !it
+            binding.resetBtn.text = if(it) "Mute" else "reset"
+            if(it){
+                binding.resetBtn.setOnClickListener {
+                    timerViewmodel.muteTimer()
+                }
+            }
         })
 
     }
@@ -131,7 +141,8 @@ class TImerFragment : Fragment(R.layout.timer_fragment), TimeSelectionDialogFrag
     }
 
     override fun onTimeSelected() {
-            timerViewmodel.toggleBorder(R.drawable.circle_border)
+            timerViewmodel.toggleBorder(R.color.orange)
+            timerViewmodel.toggleProgress(100)
             timerViewmodel.toggleResetButtonColor(R.color.orange)
              timerViewmodel.endSession()
     }
@@ -141,7 +152,8 @@ class TImerFragment : Fragment(R.layout.timer_fragment), TimeSelectionDialogFrag
     }
 
     override fun cancelSelection() {
-        timerViewmodel.toggleBorder(R.drawable.circle_border)
+        timerViewmodel.toggleBorder(R.color.orange)
+        timerViewmodel.toggleProgress(100)
         timerViewmodel.toggleResetButtonColor(R.color.orange)
         timerViewmodel.toggleButtonVisibility(false)
         timerViewmodel.resetTimer()

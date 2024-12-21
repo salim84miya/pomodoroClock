@@ -28,8 +28,8 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
     private var _breakTime = MutableLiveData<Int>()
     val breakTime:LiveData<Int> = _breakTime
 
-    private var _timeLeft = MutableLiveData<Int>()
-    val timeLeft:LiveData<Int> = _timeLeft
+    private var _progress = MutableLiveData<Int>()
+    val progress:LiveData<Int> = _progress
 
     private var _buttonVisibility = MutableLiveData<Pair<Boolean,Boolean>>()
     val buttonVisibility :LiveData<Pair<Boolean,Boolean>> = _buttonVisibility
@@ -60,6 +60,7 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
         _elapsedSeconds.value = 0;
         _isShowRestartDialog.value = false
         _formatedTime.value = productiveTime.value?.let { formatTime(it) }
+        _progress.value = 100
     }
 
     private var _isProductiveValue = MutableLiveData(true)
@@ -101,19 +102,28 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
         _buttonVisibility.value = Pair(true,true)
 
         if(isProductive.value != false){
-            _borderColor.value = R.drawable.circle_border
+            _borderColor.value = R.color.orange
             _resetButtonColor.value = R.color.orange
         }else{
-            _borderColor.value = R.drawable.circle_border_blue
+            _borderColor.value = R.color.blue
             _resetButtonColor.value = R.color.blue
         }
 
         _timerJob.value = viewModelScope.launch {
+            _progress.value = 100
+
             while ((elapsedSeconds.value?:0)<time){
+                val remainingTime = time-(elapsedSeconds.value ?:0)
+
+
                 incrementElapsedSeconds()
+                _progress.value = ((remainingTime*100)/time).toInt()
                 _formatedTime.value = formatTime(time-(elapsedSeconds.value?:0))
+
                 delay(1000)
             }
+
+           _progress.value = 0
             buzzerSound()
             stopTimer()
 
@@ -138,6 +148,11 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
         stopTimer()
         resetElapsedSeconds()
         _formatedTime.value = if(isProductive.value != false) formatTime(productiveTime.value ?: 3) else formatTime(breakTime.value ?: 2)
+         _progress.value = 100
+    }
+
+    fun muteTimer(){
+        stoppingBuzzerSound()
     }
 
     private suspend fun buzzerSound(){
@@ -169,12 +184,6 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
             stop()
             release()
         }
-//        try {
-//            mediaPlayer?.release()
-//        }catch (e:Exception){
-//            Log.e("MediaPlayer","Error Releasing media player")
-//        }
-
         mediaPlayer = null
     }
 
@@ -186,7 +195,7 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
     fun endSession(){
         resetTimer()
         toggleProductiveState(true)
-        _borderColor.value = R.drawable.circle_border
+        _borderColor.value = R.color.orange
         _resetButtonColor.value = R.color.orange
         stoppingBuzzerSound()
         _buttonVisibility.value = Pair(false,false)
@@ -194,6 +203,10 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
 
     fun toggleBorder(border:Int){
         _borderColor.value = border
+    }
+
+    fun toggleProgress(progress:Int){
+        _progress.value = progress
     }
 
     fun toggleResetButtonColor(buttonColor:Int){
