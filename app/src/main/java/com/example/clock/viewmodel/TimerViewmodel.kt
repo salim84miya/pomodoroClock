@@ -41,9 +41,6 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
     private var _formatedTime = MutableLiveData<String>()
     val formatedTime:LiveData<String> = _formatedTime
 
-    private var _resetButtonColor = MutableLiveData<Int>()
-    val resetButtonColor:LiveData<Int> = _resetButtonColor
-
     private var _timerJob = MutableLiveData<Job?>()
     val timerJob:LiveData<Job?> = _timerJob
 
@@ -64,12 +61,18 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
     init {
         _productiveTime.value = MyApp.sharedPref.getInt("focus",25);
         _breakTime.value = MyApp.sharedPref.getInt("rest",5);
+
         _focusTimerColor.value = MyApp.sharedPref.getInt("focus_timer_color",Color.argb(250, 112, 0, 0))
         _breakTimerColor.value = MyApp.sharedPref.getInt("break_timer_color",Color.argb(255, 40, 186, 251))
+
         _borderColor.value = _focusTimerColor.value
+
         _elapsedSeconds.value = 0;
+
         _isShowRestartDialog.value = false
+
         _formatedTime.value = productiveTime.value?.let { formatTime(it) }
+
         _progress.value = 100
     }
 
@@ -109,26 +112,25 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
 
     fun runningTimer(time:Int){
 
+        val duration =time* 60;
+
         _buttonVisibility.value = Pair(true,true)
 
         if(isProductive.value != false){
             _borderColor.value = _focusTimerColor.value
-            _resetButtonColor.value = _focusTimerColor.value
         }else{
             _borderColor.value = _breakTimerColor.value
-            _resetButtonColor.value = _breakTimerColor.value
         }
 
         _timerJob.value = viewModelScope.launch {
             _progress.value = 100
 
-            while ((elapsedSeconds.value?:0)<time){
-                val remainingTime = time-(elapsedSeconds.value ?:0)
+            while ((elapsedSeconds.value?:0)<duration){
+                val remainingTime = duration-(elapsedSeconds.value ?:0)
 
-
+                _progress.value = ((remainingTime*100)/duration).toInt()
                 incrementElapsedSeconds()
-                _progress.value = ((remainingTime*100)/time).toInt()
-                _formatedTime.value = formatTime(time-(elapsedSeconds.value?:0))
+                _formatedTime.value = formatTime(duration-(elapsedSeconds.value?:0))
 
                 delay(1000)
             }
@@ -206,7 +208,6 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
         resetTimer()
         toggleProductiveState(true)
         _borderColor.value = _focusTimerColor.value
-        _resetButtonColor.value = _focusTimerColor.value
         stoppingBuzzerSound()
         _buttonVisibility.value = Pair(false,false)
     }
@@ -219,9 +220,6 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
         _progress.value = progress
     }
 
-    fun toggleResetButtonColor(buttonColor:Int){
-        _resetButtonColor.value = buttonColor
-    }
 
     fun toggleButtonVisibility(btnVisibility:Boolean){
         _buttonVisibility.value = Pair(btnVisibility,btnVisibility)

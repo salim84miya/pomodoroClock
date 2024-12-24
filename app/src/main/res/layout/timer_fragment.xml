@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:indicatorSize="316dp"
-        app:trackColor="@color/white"
+        app:trackColor="@color/black"
         app:indicatorDirectionCircular="clockwise"
         app:trackThickness="16dp"
         android:indeterminate="false"
@@ -20,18 +20,6 @@
         app:layout_constraintEnd_toEndOf="@id/timer_clock_tv"
         app:layout_constraintStart_toStartOf="@id/timer_clock_tv"
         app:layout_constraintTop_toTopOf="@id/timer_clock_tv"/>
-
-
-<!--    <ImageView-->
-<!--        android:id="@+id/timer_border"-->
-<!--        android:layout_width="300dp"-->
-<!--        android:layout_height="300dp"-->
-<!--        android:src="@drawable/circle_border"-->
-<!--        app:layout_constraintBottom_toBottomOf="@id/timer_clock_tv"-->
-<!--        app:layout_constraintEnd_toEndOf="@id/timer_clock_tv"-->
-<!--        app:layout_constraintStart_toStartOf="@id/timer_clock_tv"-->
-<!--        app:layout_constraintTop_toTopOf="@id/timer_clock_tv"/>-->
-
 
     <TextView
         android:id="@+id/timer_clock_tv"
@@ -56,7 +44,7 @@
         android:layout_height="wrap_content"
         android:text="Reset"
         android:visibility="gone"
-        android:backgroundTint="@color/orange"
+        android:backgroundTint="@color/blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"

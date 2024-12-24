@@ -1,5 +1,6 @@
 package com.example.clock.fragments
 
+import android.content.res.Configuration
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Spannable
@@ -26,7 +27,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
 import java.util.Calendar
+import kotlin.math.ceil
 
 class ClockFragment: Fragment(R.layout.clock_fragment) {
 
@@ -60,6 +63,15 @@ class ClockFragment: Fragment(R.layout.clock_fragment) {
         super.onViewCreated(view, savedInstanceState)
 
         clockText = binding.fragClockTv
+
+        setDateTvVisibility()
+
+        clockViewmodel.getCurrentDate()
+
+        clockViewmodel.currentDate.observe(viewLifecycleOwner, Observer {
+            binding.dateTv?.text = it
+        })
+
         coroutineScope = CoroutineScope(Dispatchers.Main)
         startTime()
         clockText.setOnClickListener {
@@ -78,6 +90,8 @@ class ClockFragment: Fragment(R.layout.clock_fragment) {
 
     override fun onResume() {
         super.onResume()
+
+
 
         if(!::coroutineScope.isInitialized|| !coroutineScope.isActive){
             startTime()
@@ -143,5 +157,16 @@ class ClockFragment: Fragment(R.layout.clock_fragment) {
             clockText.text = spannableString;
         }
 
+    }
+
+    private fun setDateTvVisibility(){
+
+        val orientation = resources.configuration.orientation
+
+        if(orientation == Configuration.ORIENTATION_PORTRAIT){
+            binding.dateTv.visibility = View.GONE
+        }else if(orientation == Configuration.ORIENTATION_LANDSCAPE){
+            binding.dateTv.visibility = View.VISIBLE
+        }
     }
 }

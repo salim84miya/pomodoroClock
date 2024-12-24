@@ -13,7 +13,7 @@
         android:layout_marginTop="8dp"
         app:layout_constraintDimensionRatio="1:1"
         app:indicatorSize="316dp"
-        app:trackColor="@color/white"
+        app:trackColor="@color/black"
         app:indicatorDirectionCircular="clockwise"
         app:trackThickness="16dp"
         android:indeterminate="false"
@@ -23,23 +23,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
-
-<!--    <ImageView-->
-<!--        android:id="@+id/timer_border"-->
-<!--        android:layout_width="0dp"-->
-<!--        android:layout_height="0dp"-->
-<!--        android:padding="10dp"-->
-<!--        app:layout_constraintDimensionRatio="1:1"-->
-<!--        android:contentDescription="Border"-->
-<!--        app:layout_constraintHorizontal_bias="0.6"-->
-<!--        android:src="@drawable/circle_border"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        android:layout_marginBottom="8dp"-->
-<!--        android:layout_marginTop="8dp"-->
-<!--        app:layout_constraintTop_toTopOf="parent"/>-->
-
 
     <TextView
         android:id="@+id/timer_clock_tv"
@@ -62,7 +45,7 @@
         android:id="@+id/resetBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:backgroundTint="#FA7000"
+        android:backgroundTint="@color/blue"
         android:text="Reset"
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"

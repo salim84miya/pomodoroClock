@@ -6,6 +6,24 @@
     android:id="@+id/clock_main"
     android:layout_height="match_parent">
 
+
+    <TextView
+        android:id="@+id/dateTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:fontFamily="@font/nunito_bold"
+        android:text="Wednesday,December 23"
+        app:layout_constraintVertical_bias="0.3"
+        app:layout_constraintHorizontal_bias="0.6"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
     <TextView
         android:id="@+id/frag_clock_tv"
         android:layout_width="wrap_content"
@@ -15,11 +33,10 @@
         android:text="12:44"
         android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="100sp"
+        android:textSize="85sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="@id/dateTv"
+        app:layout_constraintStart_toStartOf="@id/dateTv"
+        app:layout_constraintTop_toBottomOf="@id/dateTv" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
