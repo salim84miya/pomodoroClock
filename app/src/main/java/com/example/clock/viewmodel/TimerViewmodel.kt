@@ -59,7 +59,7 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
     val breakTimerColor:LiveData<Int> = _breakTimerColor
 
     init {
-        _productiveTime.value = MyApp.sharedPref.getInt("focus",25);
+        _productiveTime.value = (MyApp.sharedPref.getInt("focus",25));
         _breakTime.value = MyApp.sharedPref.getInt("rest",5);
 
         _focusTimerColor.value = MyApp.sharedPref.getInt("focus_timer_color",Color.argb(250, 112, 0, 0))
@@ -71,7 +71,7 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
 
         _isShowRestartDialog.value = false
 
-        _formatedTime.value = productiveTime.value?.let { formatTime(it) }
+        _formatedTime.value = formatTime((_productiveTime.value ?: 0)*60)
 
         _progress.value = 100
     }
