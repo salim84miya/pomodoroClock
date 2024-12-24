@@ -2,6 +2,7 @@ package com.example.clock.viewmodel
 
 import android.app.Application
 import android.content.Context
+import android.graphics.Color
 import android.media.MediaPlayer
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
@@ -54,9 +55,18 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
     private var _isShowRestartDialog = MutableLiveData<Boolean>()
     val isShowRestartDialog:LiveData<Boolean> = _isShowRestartDialog
 
+    private var _focusTimerColor = MutableLiveData<Int>()
+    val focusTimerColor:LiveData<Int> = _focusTimerColor
+
+    private var _breakTimerColor = MutableLiveData<Int>()
+    val breakTimerColor:LiveData<Int> = _breakTimerColor
+
     init {
         _productiveTime.value = MyApp.sharedPref.getInt("focus",25);
         _breakTime.value = MyApp.sharedPref.getInt("rest",5);
+        _focusTimerColor.value = MyApp.sharedPref.getInt("focus_timer_color",Color.argb(250, 112, 0, 0))
+        _breakTimerColor.value = MyApp.sharedPref.getInt("break_timer_color",Color.argb(255, 40, 186, 251))
+        _borderColor.value = _focusTimerColor.value
         _elapsedSeconds.value = 0;
         _isShowRestartDialog.value = false
         _formatedTime.value = productiveTime.value?.let { formatTime(it) }
@@ -83,7 +93,7 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
 
     }
 
-    fun incrementElapsedSeconds(){
+    private fun incrementElapsedSeconds(){
         _elapsedSeconds.value = (_elapsedSeconds.value ?:0)+1;
     }
 
@@ -102,11 +112,11 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
         _buttonVisibility.value = Pair(true,true)
 
         if(isProductive.value != false){
-            _borderColor.value = R.color.orange
-            _resetButtonColor.value = R.color.orange
+            _borderColor.value = _focusTimerColor.value
+            _resetButtonColor.value = _focusTimerColor.value
         }else{
-            _borderColor.value = R.color.blue
-            _resetButtonColor.value = R.color.blue
+            _borderColor.value = _breakTimerColor.value
+            _resetButtonColor.value = _breakTimerColor.value
         }
 
         _timerJob.value = viewModelScope.launch {
@@ -195,8 +205,8 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
     fun endSession(){
         resetTimer()
         toggleProductiveState(true)
-        _borderColor.value = R.color.orange
-        _resetButtonColor.value = R.color.orange
+        _borderColor.value = _focusTimerColor.value
+        _resetButtonColor.value = _focusTimerColor.value
         stoppingBuzzerSound()
         _buttonVisibility.value = Pair(false,false)
     }
@@ -219,5 +229,21 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
 
     fun toggleRestartDialogDisplaying(show:Boolean){
         _isShowRestartDialog.value = show
+    }
+
+    fun toggleFocusTimerColor(color:Int){
+        _focusTimerColor.value = color
+        toggleBorder(color)
+        MyApp.sharedPref.edit()
+            .putInt("focus_timer_color",color)
+            .apply()
+    }
+
+    fun toggleBreakTimerColor(color:Int){
+        _breakTimerColor.value = color
+
+        MyApp.sharedPref.edit()
+            .putInt("break_timer_color",color)
+            .apply()
     }
 }

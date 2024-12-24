@@ -15,6 +15,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.example.clock.adapter.ClockStateAdapter
 import com.example.clock.fragments.HelpFragment
+import com.example.clock.fragments.SettingFragment
 import com.example.clock.viewmodel.MainActivityViewmodel
 
 
@@ -63,7 +64,8 @@ class MainActivity : AppCompatActivity() {
                showFragment(HelpFragment())
             }
             R.id.setting->{
-                Toast.makeText(this, "Setting option selected", Toast.LENGTH_SHORT).show()
+                showFragment(SettingFragment())
+//                Toast.makeText(this, "Setting option selected", Toast.LENGTH_SHORT).show()
             }
         }
        return true

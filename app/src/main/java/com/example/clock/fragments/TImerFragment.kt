@@ -62,18 +62,18 @@ class TImerFragment : Fragment(R.layout.timer_fragment), TimeSelectionDialogFrag
             }
         })
 
-
-        timerViewmodel.borderColor.observe(viewLifecycleOwner, Observer {
-            binding.timerBorder.setIndicatorColor(resources.getColor(it))
-        })
-
         timerViewmodel.progress.observe(viewLifecycleOwner, Observer {
             Log.d("Timer", "Progress: ${it}")
             binding.timerBorder.progress = it
         })
 
+
+        timerViewmodel.borderColor.observe(viewLifecycleOwner, Observer {
+            binding.timerBorder.setIndicatorColor(it)
+        })
+
         timerViewmodel.resetButtonColor.observe(viewLifecycleOwner, Observer {
-            binding.resetBtn.setBackgroundColor(resources.getColor(it))
+            binding.resetBtn.setBackgroundColor(it)
         })
 
         timerViewmodel.isShowRestartDialog.observe(viewLifecycleOwner, Observer {
@@ -87,12 +87,12 @@ class TImerFragment : Fragment(R.layout.timer_fragment), TimeSelectionDialogFrag
             true
         }
 
-        binding.timerClockTv.setOnClickListener {
-           startPomodoro()
-        }
-
         binding.resetBtn.setOnClickListener {
             timerViewmodel.resetTimer()
+        }
+
+        binding.timerClockTv.setOnClickListener {
+           startPomodoro()
         }
 
         binding.endBtn.setOnClickListener {
@@ -104,6 +104,10 @@ class TImerFragment : Fragment(R.layout.timer_fragment), TimeSelectionDialogFrag
             if(it){
                 binding.resetBtn.setOnClickListener {
                     timerViewmodel.muteTimer()
+                }
+            }else{
+                binding.resetBtn.setOnClickListener {
+                    timerViewmodel.resetTimer()
                 }
             }
         })
@@ -141,10 +145,13 @@ class TImerFragment : Fragment(R.layout.timer_fragment), TimeSelectionDialogFrag
     }
 
     override fun onTimeSelected() {
-            timerViewmodel.toggleBorder(R.color.orange)
+
+            timerViewmodel.focusTimerColor.observe(viewLifecycleOwner, Observer {
+                timerViewmodel.toggleBorder(it)
+                timerViewmodel.toggleResetButtonColor(it)
+            })
             timerViewmodel.toggleProgress(100)
-            timerViewmodel.toggleResetButtonColor(R.color.orange)
-             timerViewmodel.endSession()
+            timerViewmodel.endSession()
     }
 
     override fun restartSelection() {
@@ -152,9 +159,11 @@ class TImerFragment : Fragment(R.layout.timer_fragment), TimeSelectionDialogFrag
     }
 
     override fun cancelSelection() {
-        timerViewmodel.toggleBorder(R.color.orange)
+        timerViewmodel.focusTimerColor.observe(viewLifecycleOwner, Observer {
+            timerViewmodel.toggleBorder(it)
+            timerViewmodel.toggleResetButtonColor(it)
+        })
         timerViewmodel.toggleProgress(100)
-        timerViewmodel.toggleResetButtonColor(R.color.orange)
         timerViewmodel.toggleButtonVisibility(false)
         timerViewmodel.resetTimer()
     }
