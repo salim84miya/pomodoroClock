@@ -1,6 +1,5 @@
 package com.example.clock.fragments
 
-import android.app.Application
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -44,13 +43,13 @@ class TimeSelectionDialogFragment:DialogFragment() {
         focusTimePicker.maxValue =90
 
         viewmodel.productiveTime.observe(viewLifecycleOwner, Observer {
-            focusTimePicker.value = it
+            focusTimePicker.value = it/60;
         })
 
         breakTimePicker.minValue = 1
         breakTimePicker.maxValue = 90
         viewmodel.breakTime.observe(viewLifecycleOwner, Observer {
-            breakTimePicker.value = it
+            breakTimePicker.value = it/60;
         })
 
         val saveBtn = view.findViewById<Button>(R.id.save_btn)
@@ -58,7 +57,10 @@ class TimeSelectionDialogFragment:DialogFragment() {
 
         saveBtn.setOnClickListener {
 
-            viewmodel.changeTimerTime(focusTimePicker.value,breakTimePicker.value)
+            val focusTime = (focusTimePicker.value)*60;
+            val breakTime = (breakTimePicker.value)*60;
+
+            viewmodel.changeTimerTime(focusTime,breakTime)
             listener?.onTimeSelected()
             dismiss()
         }

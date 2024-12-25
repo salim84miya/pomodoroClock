@@ -112,8 +112,6 @@ class TImerFragment : Fragment(R.layout.timer_fragment), TimeSelectionDialogFrag
 
     private fun startPomodoro(){
 
-        Log.d("SharedPreferences", "minutes:$productiveTime seconds:$breakTime ")
-
         if (timerViewmodel.timerJob.value == null) {
             timerViewmodel.runningTimer(if(isProductive) productiveTime else breakTime)
         } else {

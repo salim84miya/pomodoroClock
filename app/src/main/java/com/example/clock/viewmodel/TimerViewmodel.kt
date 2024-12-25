@@ -58,9 +58,18 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
     private var _breakTimerColor = MutableLiveData<Int>()
     val breakTimerColor:LiveData<Int> = _breakTimerColor
 
+    private var _isProductiveValue = MutableLiveData(true)
+    val isProductive:LiveData<Boolean> = _isProductiveValue;
+
     init {
-        _productiveTime.value = (MyApp.sharedPref.getInt("focus",25));
-        _breakTime.value = MyApp.sharedPref.getInt("rest",5);
+        _productiveTime.value = MyApp.sharedPref.getInt("focus",600);
+        _breakTime.value = MyApp.sharedPref.getInt("rest",300);
+
+
+        Log.d("Timer","_productiveTime.value ${_productiveTime.value}")
+        Log.d("Timer","productiveTime.value ${productiveTime.value}")
+        Log.d("Timer","_breakTime.value ${_breakTime.value}")
+        Log.d("Timer","breakTime.value ${breakTime.value}")
 
         _focusTimerColor.value = MyApp.sharedPref.getInt("focus_timer_color",Color.argb(250, 112, 0, 0))
         _breakTimerColor.value = MyApp.sharedPref.getInt("break_timer_color",Color.argb(255, 40, 186, 251))
@@ -71,14 +80,10 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
 
         _isShowRestartDialog.value = false
 
-        _formatedTime.value = formatTime((_productiveTime.value ?: 0)*60)
+        _formatedTime.value = formatTime(_productiveTime.value ?: 0)
 
         _progress.value = 100
     }
-
-    private var _isProductiveValue = MutableLiveData(true)
-    val isProductive:LiveData<Boolean> = _isProductiveValue;
-
 
     fun toggleProductiveState(value:Boolean){
         _isProductiveValue.value = value
@@ -112,8 +117,6 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
 
     fun runningTimer(time:Int){
 
-        val duration =time* 60;
-
         _buttonVisibility.value = Pair(true,true)
 
         if(isProductive.value != false){
@@ -125,12 +128,12 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
         _timerJob.value = viewModelScope.launch {
             _progress.value = 100
 
-            while ((elapsedSeconds.value?:0)<duration){
-                val remainingTime = duration-(elapsedSeconds.value ?:0)
+            while ((elapsedSeconds.value?:0)<time){
+                val remainingTime = time-(elapsedSeconds.value ?:0)
 
-                _progress.value = ((remainingTime*100)/duration).toInt()
+                _progress.value = ((remainingTime*100)/time).toInt()
                 incrementElapsedSeconds()
-                _formatedTime.value = formatTime(duration-(elapsedSeconds.value?:0))
+                _formatedTime.value = formatTime(time-(elapsedSeconds.value?:0))
 
                 delay(1000)
             }
@@ -159,7 +162,7 @@ class TimerViewmodel(application:Application):AndroidViewModel(application) {
      fun resetTimer(){
         stopTimer()
         resetElapsedSeconds()
-        _formatedTime.value = if(isProductive.value != false) formatTime(productiveTime.value ?: 3) else formatTime(breakTime.value ?: 2)
+        _formatedTime.value = if(isProductive.value != false) formatTime(productiveTime.value ?: 600) else formatTime(breakTime.value ?: 300)
          _progress.value = 100
     }
 
