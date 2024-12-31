@@ -1,14 +1,13 @@
 package com.example.clock.viewmodel
 
-import android.content.res.Configuration
 import android.graphics.Color
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
-import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import java.time.DayOfWeek
 import java.util.Calendar
 
 class ClockViewmodel:ViewModel() {
@@ -27,7 +26,7 @@ class ClockViewmodel:ViewModel() {
 
     private fun formatDate(date: Int, day: Int, month: Int) {
 
-        val daysOfWeek = arrayOf("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+        val daysOfWeek = arrayOf("Sunday","Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
         val monthsOfYear = arrayOf("January","February","March","April","May","June","July","August","September","October","November","December")
 
         val dayOfWeek = daysOfWeek[day]
@@ -72,8 +71,10 @@ class ClockViewmodel:ViewModel() {
     fun getCurrentDate(){
         val calendar = Calendar.getInstance()
         val month =  calendar.get(Calendar.MONTH)
-        val day = calendar.get(Calendar.DAY_OF_WEEK)
+        var day = calendar.get(Calendar.DAY_OF_WEEK)
         val date = calendar.get(Calendar.DAY_OF_MONTH)
+
+        day = if(day==1) 0 else day-1;
 
         formatDate(date,day,month)
     }
